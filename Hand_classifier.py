@@ -93,7 +93,7 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
         
         # Load the CSV file
         df = pd.read_csv(csv_path)
-        df = df.dropna(subset=['Mudra'])  # Drop rows with NaN values
+        #df = df.dropna(subset=['Mudra'])  # Drop rows with NaN values
         
         # Initialize counters
         success_count = 0

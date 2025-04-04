@@ -13,7 +13,7 @@ def load_models():
         autoencoder.eval()  # Set to evaluation mode
         
         # Load the Random Forest classifier
-        clf = joblib.load('mudra_random_forest_classifier.joblib')
+        clf = joblib.load('mudra_random_forest.joblib')
         
         # Load the scaler
         scaler = joblib.load('mudra_scaler.joblib')
@@ -133,7 +133,7 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
         print(f"  Success: {success_count} points")
         print(f"  Failures: {fail_count} points")
         print(f"  Success Rate: {success_rate:.2f}%")
-        
+
         return success_count, fail_count, success_rate
     except Exception as e:
         print(f"Error during prediction: {e}")

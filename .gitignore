@@ -1,0 +1,3 @@
+# Ignore SSL/TLS certificates and private keys
+*.crt
+*.key

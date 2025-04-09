@@ -3,20 +3,29 @@ import joblib
 import pandas as pd
 import numpy as np
 from Autoencoder import Autoencoder # Assuming Autoencoder.py contains the Autoencoder class
+import os
 
 def load_models():
     # Load the trained models and scaler
     try:
+        # Defina o caminho para o diretório onde o arquivo está localizado
+        diretorio = 'Hand_classifier'
+
+        # Construa o caminho completo para o arquivo .pth
+        caminho_autoencoder = os.path.join(diretorio, 'autoencoder.pth')
+        caminho_random_forest = os.path.join(diretorio, 'mudra_random_forest.joblib')
+        caminho_scaler = os.path.join(diretorio, 'mudra_scaler.joblib')
+
         # Load the autoencoder model
         autoencoder = Autoencoder(input_dim=24, latent_dim=10)
-        autoencoder.load_state_dict(torch.load('mudra_autoencoder_model.pth'))
+        autoencoder.load_state_dict(torch.load(caminho_autoencoder))
         autoencoder.eval()  # Set to evaluation mode
         
         # Load the Random Forest classifier
-        clf = joblib.load('mudra_random_forest.joblib')
+        clf = joblib.load(caminho_random_forest)
         
         # Load the scaler
-        scaler = joblib.load('mudra_scaler.joblib')
+        scaler = joblib.load(caminho_scaler)
         
         return autoencoder, clf, scaler
     except Exception as e:
@@ -138,6 +147,40 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
     except Exception as e:
         print(f"Error during prediction: {e}")
         return 0, 0, 0
+
+def test_with_sample_from_raw_data(raw_data_string):
+    """
+    Test the prediction function using raw data received from a POST request
+
+    Parameters:
+    raw_data_string: str - comma-separated string of feature values
+
+    Returns:
+    prediction: str - predicted class
+    """
+    try:
+        # Load models
+        autoencoder, clf, scaler = load_models()
+
+        # Convert raw string to numpy array
+        values = list(map(float, raw_data_string.strip().split(',')))
+        sample = np.array(values)  # ← garante shape (1, N)
+        # Convert numpy array to pandas Series
+        sample = pd.Series(sample.flatten())
+        print("Sample shape:", sample.shape)
+        print("Sample values:", sample.values)
+
+        # Make prediction
+        prediction = predict_mudra(sample, autoencoder, clf, scaler)
+
+        print("Prediction from raw data:", prediction)
+        return prediction
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return None
+
+
+
 # Example usage
 if __name__ == "__main__":
     # Load a sample from the combined data CSV

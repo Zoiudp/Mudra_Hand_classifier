@@ -101,7 +101,7 @@ def load_models():
         diretorio = 'Hand_classifier'
 
         # Construa o caminho completo para o arquivo .pth
-        caminho_autoencoder = os.path.join(diretorio, 'autoencoder.pth')
+        caminho_autoencoder = os.path.join(diretorio, 'mudra_autoencoder_model.pth')
         caminho_random_forest = os.path.join(diretorio, 'mudra_random_forest.joblib')
         caminho_scaler = os.path.join(diretorio, 'mudra_scaler.joblib')
         caminho_tsne = os.path.join(diretorio, 'mudra_tsne.joblib')

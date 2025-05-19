@@ -19,7 +19,6 @@ def test_with_sample_from_raw_data_lstm(raw_data_string):
     prediction: str - predicted class
     """
     try:
-        
 
         model_path = "vr_gesture_model.h5"
         scaler_path = "vr_gesture_scaler.pkl"
@@ -116,8 +115,16 @@ def load_models():
         
         # Load the scaler
         scaler = joblib.load(caminho_scaler)
-        
-        return autoencoder, clf, scaler
+
+        # Load the t-SNE model
+        tsne = joblib.load(caminho_tsne)
+        # Check if models are loaded correctly
+        if autoencoder is None or clf is None or scaler is None or tsne is None:
+            raise ValueError("One or more models failed to load.")
+        print("Models loaded successfully.")
+        # Return the loaded models
+        return autoencoder, clf, scaler, tsne
+    
     except Exception as e:
         print(f"Error loading models: {e}")
         return None, None, None

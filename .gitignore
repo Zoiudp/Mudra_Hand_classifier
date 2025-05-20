@@ -2,6 +2,9 @@
 *.crt
 *.key
 
+#ignore big files
+mudra_random_forest.joblib
+
 # gitinore template from https://github.com/github/gitignore/blob/main/Python.gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/

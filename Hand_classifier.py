@@ -103,10 +103,10 @@ def load_models():
         caminho_autoencoder = os.path.join(diretorio, 'mudra_autoencoder_model.pth')
         caminho_random_forest = os.path.join(diretorio, 'mudra_random_forest.joblib')
         caminho_scaler = os.path.join(diretorio, 'mudra_scaler.joblib')
-        caminho_tsne = os.path.join(diretorio, 'mudra_tsne.joblib')
+        caminho_pca = os.path.join(diretorio, 'pca_model.pkl')
 
         # Load the autoencoder model
-        autoencoder = Autoencoder(input_dim=24, latent_dim=10)
+        autoencoder = Autoencoder(input_dim=12, latent_dim=10)
         autoencoder.load_state_dict(torch.load(caminho_autoencoder))
         autoencoder.eval()  # Set to evaluation mode
         
@@ -117,19 +117,19 @@ def load_models():
         scaler = joblib.load(caminho_scaler)
 
         # Load the t-SNE model
-        tsne = joblib.load(caminho_tsne)
+        pca = joblib.load(caminho_pca)
         # Check if models are loaded correctly
-        if autoencoder is None or clf is None or scaler is None or tsne is None:
+        if autoencoder is None or clf is None or scaler is None or pca is None:
             raise ValueError("One or more models failed to load.")
         print("Models loaded successfully.")
         # Return the loaded models
-        return autoencoder, clf, scaler, tsne
+        return autoencoder, clf, scaler, pca
     
     except Exception as e:
         print(f"Error loading models: {e}")
         return None, None, None
 
-def predict_mudra(data, autoencoder=None, clf=None, scaler=None, tsne=None):
+def predict_mudra(data, autoencoder=None, clf=None, scaler=None, pca=None):
     """
     Predict the Mudra class for a single data point
     
@@ -141,8 +141,8 @@ def predict_mudra(data, autoencoder=None, clf=None, scaler=None, tsne=None):
     predicted_class: str - the predicted Mudra class
     """
     # Load models if not provided
-    if autoencoder is None or clf is None or scaler is None or tsne is None:
-        autoencoder, clf, scaler, tsne = load_models()
+    if autoencoder is None or clf is None or scaler is None or pca is None:
+        autoencoder, clf, scaler, pca = load_models()
     
     if isinstance(data, pd.DataFrame):
         # If a DataFrame with multiple rows is provided, use only numeric columns
@@ -175,7 +175,7 @@ def predict_mudra(data, autoencoder=None, clf=None, scaler=None, tsne=None):
     with torch.no_grad():
         latent_repr = autoencoder.encoder(tensor_data).numpy()
     
-    latent_repr_tsne = tsne.transform(latent_repr)
+    latent_repr_tsne = pca.transform(latent_repr)
     # Make prediction
     prediction = clf.predict(latent_repr_tsne)[0]
     
@@ -196,7 +196,7 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
     """
     try:
         # Load models
-        autoencoder, clf, scaler = load_models()
+        autoencoder, clf, scaler, pca = load_models()
         
         # Load the CSV file
         df = pd.read_csv(csv_path)
@@ -213,7 +213,7 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
             sample = df.iloc[random_index]
             
             # Make prediction
-            prediction = predict_mudra(sample, autoencoder, clf, scaler)
+            prediction = predict_mudra(sample, autoencoder, clf, scaler, )
             
             # Get actual class if available
             actual_class = sample.get('Mudra', "Unknown")
@@ -258,7 +258,7 @@ def test_with_sample_from_raw_data(raw_data_string):
     """
     try:
         # Load models
-        autoencoder, clf, scaler, tsne = load_models()
+        autoencoder, clf, scaler, pca = load_models()
 
         # Convert raw string to numpy array
         values = list(map(float, raw_data_string.strip().split(',')))
@@ -269,7 +269,7 @@ def test_with_sample_from_raw_data(raw_data_string):
         print("Sample values:", sample.values)
 
         # Make prediction
-        prediction = predict_mudra(sample, autoencoder, clf, scaler, tsne)
+        prediction = predict_mudra(sample, autoencoder, clf, scaler, pca)
 
         print("Prediction from raw data:", prediction)
         return prediction
@@ -279,6 +279,6 @@ def test_with_sample_from_raw_data(raw_data_string):
 
 
 # Example usage
-# if __name__ == "__main__":
+if __name__ == "__main__":
 #     # Load a sample from the combined data CSV
-#     test_with_sample_from_csv('combined_data_with_classification.csv')
+    test_with_sample_from_raw_data('-0.003881771,1.080332,0.04464874,-0.9923387,0.05828458,0.08841743,0.063634,0.4659286,0.7656907,0.7417654,0.7750583,1.0')

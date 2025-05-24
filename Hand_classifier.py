@@ -117,6 +117,11 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
         # Load the CSV file
         df = pd.read_csv(csv_path)
         #df = df.dropna(subset=['Mudra'])  # Drop rows with NaN values
+        df = df[~df['Mudra'].isin(['Vitarka', 'Dharmachakra', 'Bhumisparsa'])]
+        left_hand_columns = ['L_PositionX', 'L_PositionY', 'L_PositionZ', 'L_RotationX', 'L_RotationY', 
+                     'L_RotationZ', 'L_RotationW', 'L_CurlIndex', 'L_CurlMiddle', 'L_CurlRing', 
+                     'L_CurlPinky', 'L_CurlThumb']
+        df = df.drop(columns=left_hand_columns, errors='ignore')  # Drop left hand columns
         
         # Initialize counters
         success_count = 0
@@ -129,7 +134,7 @@ def test_with_sample_from_csv(csv_path, num_tests=10000):
             sample = df.iloc[random_index]
             
             # Make prediction
-            prediction = predict_mudra(sample, autoencoder, clf, scaler, )
+            prediction = predict_mudra(sample, autoencoder, clf, scaler, pca)
             
             # Get actual class if available
             actual_class = sample.get('Mudra', "Unknown")
@@ -197,4 +202,4 @@ def test_with_sample_from_raw_data(raw_data_string):
 # Example usage
 if __name__ == "__main__":
 #     # Load a sample from the combined data CSV
-    test_with_sample_from_raw_data('-0.003881771,1.080332,0.04464874,-0.9923387,0.05828458,0.08841743,0.063634,0.4659286,0.7656907,0.7417654,0.7750583,1.0')
+    test_with_sample_from_csv(r'Hand_classifier\combined_one_hand_data_with_classification.csv', num_tests=10000)

@@ -25,4 +25,4 @@ def predict_mudra_from_post():
 
 if __name__ == '__main__':
     # Define o caminho do certificado e da chave privada
-    app.run(ssl_context=(r'certificado.crt', r'chave_privada.key'))
+    app.run(ssl_context=(r'Hand_classifier\certificado.crt', r'Hand_classifier\chave_privada.key'))

@@ -202,4 +202,4 @@ def test_with_sample_from_raw_data(raw_data_string):
 # Example usage
 if __name__ == "__main__":
 #     # Load a sample from the combined data CSV
-    test_with_sample_from_csv(r'Hand_classifier\combined_one_hand_data_with_classification.csv', num_tests=10000)
+    test_with_sample_from_raw_data("0.1598461,0.8866271,0.2972779,-0.6671056,0.09150723,0.109362,0.7311885,5.960464E-08,0,0,0,0")
